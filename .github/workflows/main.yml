@@ -1,0 +1,53 @@
+name: Andriod pipeline
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      AutomationOnly:
+        description: Skip unit testing if AutomationOnly = TRUE
+        default: true
+        required: true
+        type: string
+
+jobs:
+  unit_test:
+    runs-on: macos-latest
+    if: ${{ github.event_name != 'workflow_dispatch' }} || ${{ inputs.AutomationOnly == true }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Download secure file
+        uses: actions/download-artifact@v2
+        with:
+          name: template/download-secure-file.yml
+
+      - name: Install Java
+        uses: actions/setup-java@v2
+        with:
+          java-version: '11'
+
+      - name: Display build info
+        run: |
+          echo "Source Branch - ${GITHUB_REF}"
+          echo "Build Reason - ${GITHUB_EVENT_NAME}"
+
+      - name: Setup Gradle
+        uses: gradle/gradle-build-action@v2
+
+      - name: Clean
+        run: |
+          ./gradlew clean
+
+      - name: Run unit tests
+        run: |
+          ./gradlew test --continue --no-daemon
+
+      - name: Publish unit test results
+        uses: EnricoMi/publish-unit-test-result-action@v1
+        with:
+          files: '**/TEST-*.xml'
+          test-suite: unit-tests
