@@ -15,6 +15,13 @@ on:
 jobs:
   unit_test:
     runs-on: macos-latest
+    permissions:
+      contents: read
+      issues: read
+      checks: write
+      pull-requests: write
+      issues: write
+      
     if: ${{ github.event_name != 'workflow_dispatch' }} || ${{ inputs.AutomationOnly == true }}
     steps:
       - name: Checkout code
