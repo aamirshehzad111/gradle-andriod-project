@@ -20,10 +20,10 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Download secure file
-        uses: actions/download-artifact@v2
-        with:
-          name: template/download-secure-file.yml
+      # - name: Download secure file
+      #   uses: actions/download-artifact@v2
+      #   with:
+      #     name: template/download-secure-file.yml
 
       - name: Install Java
         uses: actions/setup-java@v2
